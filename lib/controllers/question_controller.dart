@@ -22,9 +22,10 @@ class QuestionController extends GetxController
       .map(
         (question) => Question(
             id: question['id'],
+            explanation: question['explanation'],
             question: question['question'],
-            options: question['options'],
-            answer: question['answer_index']),
+            choices: convert(question['choices'] as List<Map<String, Object>>)
+        )
       )
       .toList();
   List<Question> get questions => this._questions;
@@ -32,8 +33,8 @@ class QuestionController extends GetxController
   bool _isAnswered = false;
   bool get isAnswered => this._isAnswered;
 
-  int _correctAns;
-  int get correctAns => this._correctAns;
+  List _correctAns;
+  List get correctAns => this._correctAns;
 
   int _selectedAns;
   int get selectedAns => this._selectedAns;
@@ -76,7 +77,7 @@ class QuestionController extends GetxController
   void checkAns(Question question, int selectedIndex) {
     // because once user press any option then it will run
     _isAnswered = true;
-    _correctAns = question.answer;
+    _correctAns = question.choices.where((element) => element.corect==1).toList();
     _selectedAns = selectedIndex;
 
     if (_correctAns == _selectedAns) _numOfCorrectAns++;
@@ -111,5 +112,9 @@ class QuestionController extends GetxController
 
   void updateTheQnNum(int index) {
     _questionNumber.value = index + 1;
+  }
+
+  static List<Choice> convert(List<Map<String, Object>> question) {
+   return question.map((e) => Choice(e["correct"],e["choice"])).toList();
   }
 }
